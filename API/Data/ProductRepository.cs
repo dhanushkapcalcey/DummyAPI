@@ -19,15 +19,14 @@ namespace API.Data
             _context.Products.Add(product);
         }
 
-        public void DeletableProduct(int productId)
+        public void DeleteProduct(Product product)
         {
-            throw new NotImplementedException();
+            _context.Products.Remove(product);
         }
 
         public async Task<Product> GetProductById(Guid productId)
         {
             return await _context.Products.FindAsync(productId);
-            //throw new NotImplementedException();
         }
 
         public async Task<IEnumerable<Product>> GetProducts()
@@ -44,5 +43,6 @@ namespace API.Data
         {
             throw new NotImplementedException();
         }
+
     }
 }

@@ -7,7 +7,7 @@ namespace API.Interfaces
         Task<IEnumerable<Product>> GetProducts();
         Task<Product> GetProductById(Guid productId);
         void AddProduct(Product product);
-        void DeletableProduct(int productId);
+        void DeleteProduct(Product product);
         void UpdateProduct(Product product);
         Task<bool> SaveAllAsync();
 
