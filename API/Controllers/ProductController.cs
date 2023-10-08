@@ -19,7 +19,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ProductDto>> AddProduct(ProductDto productDto)
+        public async Task<ActionResult<Product>> AddProduct(ProductDto productDto)
         {
             if(!ModelState.IsValid) 
             {
@@ -32,12 +32,12 @@ namespace API.Controllers
                 Quantity = productDto.Quantity,
                 Price = productDto.Price,
                 ImageUrl = productDto.ImageUrl,
-                Id = new Guid()
+                Id =  Guid.NewGuid()
             };
             _productRepository.AddProduct(product);
             await _productRepository.SaveAllAsync();
 
-            return Ok(product);
+            return CreatedAtAction("GetProductById", new { productId = product.Id }, product);
         }
 
         [HttpGet]
