@@ -103,10 +103,13 @@ namespace API.Controllers
             product.Quantity = productDto.Quantity;
             product.Price = productDto.Price;
             product.Name = productDto.Name;
-            if (await _productRepository.SaveAllAsync()) return Ok(product);
+            if (await _productRepository.SaveAllAsync()) return Ok(_mapper.Map<Product, ProductDto>(product));
 
             return BadRequest("Failed to update user");
         }
+
+        //[HttpPut("{productId}")]
+        //public Task<ActionResult<Product>>
 
     }
 }

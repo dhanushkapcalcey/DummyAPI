@@ -8,7 +8,7 @@ namespace API.Helpers
     {
         public AutoMapperProfiles()
         {
-            CreateMap<ProductDto, Product>();
+            CreateMap<Product, ProductDto>();
         }
     }
 }
