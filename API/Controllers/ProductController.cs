@@ -53,7 +53,28 @@ namespace API.Controllers
             return Ok(products);
         }
 
+        [HttpGet("{productId}")]
+        public async Task<ActionResult<Product>> GetProductById(string productId)
+        {
+            Guid producGuid;
+            try
+            {
+                producGuid = Guid.Parse(productId);
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest();
+            }
 
+            var product = await _productRepository.GetProductById(producGuid);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(product);
+        }
 
 
     }
