@@ -1,5 +1,6 @@
 ﻿using API.Entities;
 using API.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data
@@ -23,15 +24,15 @@ namespace API.Data
             throw new NotImplementedException();
         }
 
-        public Product GetProductById(int id)
+        public async Task<Product> GetProductById(Guid productId)
         {
-            throw new NotImplementedException();
+            return await _context.Products.FindAsync(productId);
+            //throw new NotImplementedException();
         }
 
         public async Task<IEnumerable<Product>> GetProducts()
         {
             return await _context.Products.ToListAsync();
-            //throw new NotImplementedException();
         }
 
         public async Task<bool> SaveAllAsync()

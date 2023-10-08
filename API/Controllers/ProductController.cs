@@ -44,7 +44,17 @@ namespace API.Controllers
         public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
         {
             var products = await _productRepository.GetProducts();
+
+            if (!products.Any())
+            {
+                return NoContent();
+            }
+
             return Ok(products);
         }
+
+
+
+
     }
 }
