@@ -1,5 +1,6 @@
 ﻿using API.Entities;
 using API.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Data
 {
@@ -27,14 +28,15 @@ namespace API.Data
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Product> GetProducts()
+        public async Task<IEnumerable<Product>> GetProducts()
         {
-            throw new NotImplementedException();
+            return await _context.Products.ToListAsync();
+            //throw new NotImplementedException();
         }
 
-        public Task<bool> SaveAllAsync()
+        public async Task<bool> SaveAllAsync()
         {
-            throw new NotImplementedException();
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public void UpdateProduct(Product product)

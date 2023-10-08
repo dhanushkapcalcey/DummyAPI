@@ -4,7 +4,7 @@ namespace API.Interfaces
 {
     public interface IProductRepository
     {
-        IEnumerable<Product> GetProducts();
+        Task<IEnumerable<Product>> GetProducts();
         Product GetProductById(int id);
         void AddProduct(Product product);
         void DeletableProduct(int productId);
