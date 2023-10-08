@@ -108,8 +108,27 @@ namespace API.Controllers
             return BadRequest("Failed to update user");
         }
 
-        //[HttpPut("{productId}")]
-        //public Task<ActionResult<Product>>
+        [HttpDelete("{productId}")]
+        public async Task<ActionResult> DeleteProudctById(string productId) 
+        {
+            Guid productGuid;
+            try
+            {
+                productGuid = Guid.Parse(productId);
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest();
+            }
 
+            var product = await _productRepository.GetProductById(productGuid);
+            if (product == null) return NotFound(productId);
+            _productRepository.DeleteProduct(product);
+            
+            if (await _productRepository.SaveAllAsync()) return Ok("deleted");
+
+            return BadRequest("Failed to delete user");
+        }
     }
 }
