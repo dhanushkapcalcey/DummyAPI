@@ -2,6 +2,7 @@
 using API.DTOs;
 using API.Entities;
 using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,16 +13,18 @@ namespace API.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductRepository _productRepository;
+        private readonly IMapper _mapper;
 
-        public ProductController(IProductRepository productRepository) 
+        public ProductController(IProductRepository productRepository, IMapper mapper)
         {
             _productRepository = productRepository;
+            _mapper = mapper;
         }
 
         [HttpPost]
         public async Task<ActionResult<Product>> AddProduct(ProductDto productDto)
         {
-            if(!ModelState.IsValid) 
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -32,7 +35,7 @@ namespace API.Controllers
                 Quantity = productDto.Quantity,
                 Price = productDto.Price,
                 ImageUrl = productDto.ImageUrl,
-                Id =  Guid.NewGuid()
+                Id = Guid.NewGuid()
             };
             _productRepository.AddProduct(product);
             await _productRepository.SaveAllAsync();
@@ -76,6 +79,34 @@ namespace API.Controllers
             return Ok(product);
         }
 
+        [HttpPatch("{productId}")]
+        public async Task<ActionResult<Product>> UpdateProduct(ProductDto productDto, 
+            string productId) 
+        {
+            Guid productGuid;
+            try
+            {
+                productGuid = Guid.Parse(productId);
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest();
+            }
+
+            var product = await _productRepository.GetProductById(productGuid);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            product.Quantity = productDto.Quantity;
+            product.Price = productDto.Price;
+            product.Name = productDto.Name;
+            if (await _productRepository.SaveAllAsync()) return Ok(product);
+
+            return BadRequest("Failed to update user");
+        }
 
     }
 }
