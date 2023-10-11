@@ -1,4 +1,5 @@
-﻿using API.Entities;
+﻿using API.DTOs;
+using API.Entities;
 using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,9 +20,10 @@ namespace API.Data
             _context.Products.Add(product);
         }
 
-        public void DeleteProduct(Product product)
+        public async Task<bool> DeleteProduct(Product product)
         {
             _context.Products.Remove(product);
+            return await _context.SaveChangesAsync()>0;
         }
 
         public async Task<Product> GetProductById(Guid productId)
@@ -39,9 +41,15 @@ namespace API.Data
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public void UpdateProduct(Product product)
+        public async Task<bool> UpdateProduct(Guid productId, ProductDto productDto)
         {
-            throw new NotImplementedException();
+            var product = await GetProductById(productId);
+            if (product == null) { return false; }
+            product.Quantity = productDto.Quantity;
+            product.Price = productDto.Price;
+            product.Name = productDto.Name;
+            if(await SaveAllAsync()) return true;
+            return false;
         }
 
     }

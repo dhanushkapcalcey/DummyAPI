@@ -1,4 +1,5 @@
 using API.Data;
+using API.Entities;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,7 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
+builder.Services.AddMediatR(c => c.RegisterServicesFromAssemblyContaining<Program>());
 
 var app = builder.Build();
 

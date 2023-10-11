@@ -1,8 +1,11 @@
-﻿using API.Data;
+﻿using API.Commands;
+using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Interfaces;
+using API.Queries;
 using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,21 +17,18 @@ namespace API.Controllers
     {
         private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
 
-        public ProductController(IProductRepository productRepository, IMapper mapper)
+        public ProductController(IProductRepository productRepository, IMapper mapper, IMediator mediator)
         {
             _productRepository = productRepository;
             _mapper = mapper;
+            _mediator = mediator;
         }
 
         [HttpPost]
         public async Task<ActionResult<Product>> AddProduct(ProductDto productDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var product = new Product
             {
                 Name = productDto.Name,
@@ -37,16 +37,17 @@ namespace API.Controllers
                 ImageUrl = productDto.ImageUrl,
                 Id = Guid.NewGuid()
             };
-            _productRepository.AddProduct(product);
-            await _productRepository.SaveAllAsync();
+            var command = new AddProductCommand(product);
+            var createdProduct = await _mediator.Send(command);
 
-            return CreatedAtAction("GetProductById", new { productId = product.Id }, product);
+            return CreatedAtAction("GetProductById", new { productId = createdProduct.Id }, createdProduct);
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
         {
-            var products = await _productRepository.GetProducts();
+            var query = new GetAllProductsQuery();
+            var products = await _mediator.Send(query);
 
             if (!products.Any())
             {
@@ -70,7 +71,8 @@ namespace API.Controllers
                 return BadRequest();
             }
 
-            var product = await _productRepository.GetProductById(producGuid);
+            var query = new GetProductByIdQuery(producGuid);
+            var product = await _mediator.Send(query);
             if (product == null)
             {
                 return NotFound();
@@ -94,16 +96,9 @@ namespace API.Controllers
                 return BadRequest();
             }
 
-            var product = await _productRepository.GetProductById(productGuid);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            product.Quantity = productDto.Quantity;
-            product.Price = productDto.Price;
-            product.Name = productDto.Name;
-            if (await _productRepository.SaveAllAsync()) return Ok(_mapper.Map<Product, ProductDto>(product));
+            var command = new UpdateProductCommand(productGuid, productDto);
+            var result = await _mediator.Send(command);
+            if (result) return Ok();
 
             return BadRequest("Failed to update user");
         }
@@ -122,10 +117,13 @@ namespace API.Controllers
                 return BadRequest();
             }
 
-            var product = await _productRepository.GetProductById(productGuid);
+            var query = new GetProductByIdQuery(productGuid);
+            var product = await _mediator.Send(query);
             if (product == null) return NotFound(productId);
-            _productRepository.DeleteProduct(product);
-            
+
+            var deleteCommand = new DeleteProductCommand(product);
+            await _mediator.Send(deleteCommand);
+
             if (await _productRepository.SaveAllAsync()) return Ok("deleted");
 
             return BadRequest("Failed to delete user");

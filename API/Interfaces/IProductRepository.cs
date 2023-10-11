@@ -1,4 +1,5 @@
-﻿using API.Entities;
+﻿using API.DTOs;
+using API.Entities;
 
 namespace API.Interfaces
 {
@@ -7,8 +8,8 @@ namespace API.Interfaces
         Task<IEnumerable<Product>> GetProducts();
         Task<Product> GetProductById(Guid productId);
         void AddProduct(Product product);
-        void DeleteProduct(Product product);
-        void UpdateProduct(Product product);
+        Task<bool> DeleteProduct(Product product);
+        Task<bool> UpdateProduct(Guid productId, ProductDto productDto);
         Task<bool> SaveAllAsync();
 
     }
