@@ -1,4 +1,5 @@
 ﻿using Domain.Commands;
+using Domain.Exceptions;
 using Domain.Interfaces;
 using MediatR;
 
@@ -15,7 +16,12 @@ namespace Domain.Handlers
 
         public async Task<bool> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            return await _productRepository.DeleteProduct(request.Product);
+            var product = await _productRepository.GetProductById(request.Id);
+            if (product == null)
+            {
+                throw new ProductNotFoundException(request.Id);
+            }
+            return await _productRepository.DeleteProduct(product);
         }
     }
 }

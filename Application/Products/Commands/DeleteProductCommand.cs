@@ -5,10 +5,10 @@ namespace Domain.Commands
 {
     public class DeleteProductCommand : IRequest<bool>
     {
-        public Product Product { get; set; }
-        public DeleteProductCommand(Product product)
+        public Guid Id { get; set; }
+        public DeleteProductCommand(Guid id)
         {
-            Product = product;
+            Id = id;
         }
     }
 }

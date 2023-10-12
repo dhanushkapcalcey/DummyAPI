@@ -47,7 +47,7 @@ namespace Persistance.Repositories
         public async Task<bool> UpdateProduct(Guid productId, Product productDto)
         {
             var product = await GetProductById(productId);
-            if (product == null) { return false; }
+            //if (product == null) { return false; }
             product.Quantity = productDto.Quantity;
             product.Price = productDto.Price;
             product.Name = productDto.Name;

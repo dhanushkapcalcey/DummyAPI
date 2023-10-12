@@ -7,10 +7,10 @@ namespace Domain.Commands
     {
         public Guid Id { get; set; }
         public Product Product { get; set; }
-        public UpdateProductCommand(Guid id, Product productDto)
+        public UpdateProductCommand(Guid id, Product product)
         {
             Id = id;
-            Product = productDto;
+            Product = product;
         }
     }
 }

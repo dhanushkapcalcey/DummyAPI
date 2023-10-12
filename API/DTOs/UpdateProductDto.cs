@@ -1,8 +1,7 @@
-﻿namespace API.Entities
+﻿namespace API.DTOs
 {
-    public class Product
+    public class UpdateProductDto
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public float Price { get; set; }
         public string ImageUrl { get; set; }

@@ -1,7 +1,9 @@
-using API.Data;
-using API.Entities;
-using API.Interfaces;
+using Domain.Commands;
+using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Persistance;
+using Persistance.Repositories;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +22,7 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
-builder.Services.AddMediatR(c => c.RegisterServicesFromAssemblyContaining<Program>());
+builder.Services.AddMediatR(c => c.RegisterServicesFromAssembly(typeof(AddProductCommand).Assembly));
 
 var app = builder.Build();
 

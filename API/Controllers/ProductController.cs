@@ -1,12 +1,10 @@
-﻿using API.Commands;
-using API.Data;
-using API.DTOs;
-using API.Entities;
-using API.Interfaces;
-using API.Queries;
+﻿using API.DTOs;
 using AutoMapper;
+using Domain.Commands;
+using Domain.Entities;
+using Domain.Interfaces;
+using Domain.Queries;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -27,17 +25,11 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Product>> AddProduct(ProductDto productDto)
+        public async Task<ActionResult<ProductDto>> AddProduct(ProductDto productDto)
         {
-            var product = new Product
-            {
-                Name = productDto.Name,
-                Quantity = productDto.Quantity,
-                Price = productDto.Price,
-                ImageUrl = productDto.ImageUrl,
-                Id = Guid.NewGuid()
-            };
-            var command = new AddProductCommand(product);
+            var newProduct = new Product(productDto.Name,
+                productDto.Price, productDto.ImageUrl, productDto.Quantity);
+            var command = new AddProductCommand(newProduct);
             var createdProduct = await _mediator.Send(command);
 
             return CreatedAtAction("GetProductById", new { productId = createdProduct.Id }, createdProduct);
@@ -60,10 +52,10 @@ namespace API.Controllers
         [HttpGet("{productId}")]
         public async Task<ActionResult<Product>> GetProductById(string productId)
         {
-            Guid producGuid;
+            Guid productGuid;
             try
             {
-                producGuid = Guid.Parse(productId);
+                productGuid = Guid.Parse(productId);
             }
             catch (FormatException ex)
             {
@@ -71,7 +63,7 @@ namespace API.Controllers
                 return BadRequest();
             }
 
-            var query = new GetProductByIdQuery(producGuid);
+            var query = new GetProductByIdQuery(productGuid);
             var product = await _mediator.Send(query);
             if (product == null)
             {
@@ -82,7 +74,7 @@ namespace API.Controllers
         }
 
         [HttpPatch("{productId}")]
-        public async Task<ActionResult<Product>> UpdateProduct(ProductDto productDto, 
+        public async Task<ActionResult<Product>> UpdateProduct(UpdateProductDto updateProductDto, 
             string productId) 
         {
             Guid productGuid;
@@ -95,12 +87,14 @@ namespace API.Controllers
                 Console.WriteLine(ex.Message);
                 return BadRequest();
             }
+            
+            var product = _mapper.Map<Product>(updateProductDto);
 
-            var command = new updateProductCommand(productGuid, productDto);
+            var command = new UpdateProductCommand(productGuid, product);
             var result = await _mediator.Send(command);
             if (result) return Ok();
 
-            return BadRequest("Failed to update user");
+            return BadRequest("Failed to update product");
         }
 
         [HttpDelete("{productId}")]
@@ -117,16 +111,11 @@ namespace API.Controllers
                 return BadRequest();
             }
 
-            var query = new GetProductByIdQuery(productGuid);
-            var product = await _mediator.Send(query);
-            if (product == null) return NotFound(productId);
-
-            var deleteCommand = new DeleteProductCommand(product);
-            await _mediator.Send(deleteCommand);
-
-            if (await _productRepository.SaveAllAsync()) return Ok("deleted");
+            var deleteCommand = new DeleteProductCommand(productGuid);
+            if (await _mediator.Send(deleteCommand)) return Ok();
 
             return BadRequest("Failed to delete product");
+            
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using API.Entities;
-using API.Interfaces;
-using API.Queries;
+﻿using Domain.Entities;
+using Domain.Interfaces;
+using Domain.Queries;
 using MediatR;
 
 namespace API.Handlers
