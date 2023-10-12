@@ -16,7 +16,7 @@ namespace API.Handlers
 
         public async Task<bool> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            await _productRepository.DeleteProduct(request._product);
+            return await _productRepository.DeleteProduct(request._product);
         }
     }
 }

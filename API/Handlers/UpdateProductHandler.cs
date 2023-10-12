@@ -4,7 +4,7 @@ using MediatR;
 
 namespace API.Handlers
 {
-    public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, bool>
+    public class UpdateProductHandler : IRequestHandler<updateProductCommand, bool>
     {
         private readonly IProductRepository _productRepository;
 
@@ -12,9 +12,9 @@ namespace API.Handlers
         {
             _productRepository = productRepository;
         }
-        public async Task<bool> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(updateProductCommand request, CancellationToken cancellationToken)
         {
-            return await _productRepository.UpdateProduct(request.Id, request.ProductDto);
+            return await _productRepository.UpdateProduct(request._id, request._productDto);
         }
     }
 }

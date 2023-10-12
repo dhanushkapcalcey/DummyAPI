@@ -96,7 +96,7 @@ namespace API.Controllers
                 return BadRequest();
             }
 
-            var command = new UpdateProductCommand(productGuid, productDto);
+            var command = new updateProductCommand(productGuid, productDto);
             var result = await _mediator.Send(command);
             if (result) return Ok();
 
@@ -126,7 +126,7 @@ namespace API.Controllers
 
             if (await _productRepository.SaveAllAsync()) return Ok("deleted");
 
-            return BadRequest("Failed to delete user");
+            return BadRequest("Failed to delete product");
         }
     }
 }
